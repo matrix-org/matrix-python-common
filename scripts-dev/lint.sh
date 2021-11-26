@@ -8,7 +8,7 @@
 set -e
 
 files=(
-  "matrix-python-common"
+  "matrix_common"
   "tests"
 )
 
