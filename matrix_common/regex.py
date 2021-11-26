@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import re
-from re import Pattern
+from typing import List, Pattern
 
 _WILDCARD_RUN = re.compile(r"([\?\*]+)")
 
 
-def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern:
+def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
     """Converts a glob to a compiled regex object.
 
     Args:
@@ -34,7 +34,7 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern:
     # Patterns with wildcards must be simplified to avoid performance cliffs
     # - The glob `?**?**?` is equivalent to the glob `???*`
     # - The glob `???*` is equivalent to the regex `.{3,}`
-    chunks = []
+    chunks: List[str] = []
     for chunk in _WILDCARD_RUN.split(glob):
         # No wildcards? re.escape()
         if not _WILDCARD_RUN.match(chunk):
