@@ -18,7 +18,12 @@ from typing import List, Pattern
 _WILDCARD_RUN = re.compile(r"([\?\*]+)")
 
 
-def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
+def glob_to_regex(
+    glob: str,
+    *,
+    word_boundary: bool = False,
+    ignore_case: bool = True,
+) -> Pattern[str]:
     """Converts a glob to a compiled regex object.
 
     Args:
@@ -28,6 +33,8 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
             anchored at the start and end of the string. When using this option,
             the pattern may match up to one extra non-word character on either
             side. The matching substring may be obtained from a capture group.
+        ignore_case: If `True`, the pattern will be case-insensitive.
+            Defaults to `True`.
 
     Returns:
         compiled regex pattern
@@ -59,7 +66,7 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
         # a `\n` at the end of the string.
         pattern = rf"\A({pattern})\Z"
 
-    return re.compile(pattern, re.IGNORECASE)
+    return re.compile(pattern, re.IGNORECASE if ignore_case else 0)
 
 
 def to_word_pattern(pattern: str) -> str:
