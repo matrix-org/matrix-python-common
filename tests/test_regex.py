@@ -14,7 +14,7 @@
 import re
 from unittest import TestCase
 
-from matrix_common.regex import glob_to_regex
+from matrix_common.regex import glob_to_regex, to_word_pattern
 
 
 class GlobToRegexTestCase(TestCase):
@@ -68,3 +68,22 @@ class GlobToRegexTestCase(TestCase):
 
         pattern = glob_to_regex("foobaz", ignore_case=True)
         self.assertEqual(pattern.flags & re.IGNORECASE, re.IGNORECASE)
+
+
+class WordPatternTestCase(TestCase):
+    def test_whole_word(self) -> None:
+        """Tests matching on whole words."""
+        pattern = to_word_pattern("foo bar")
+
+        self.assertRegex("foo bar", pattern)
+        self.assertRegex(" foo bar ", pattern)
+        self.assertRegex("baz foo bar baz", pattern)
+        self.assertNotRegex("foo baré", pattern)
+
+    def test_ends_with_non_letter(self) -> None:
+        """Tests matching on whole words when the pattern ends with a space."""
+        pattern = to_word_pattern("foo ")
+
+        self.assertRegex("foo bar", pattern)
+        self.assertRegex("foo ", pattern)
+        self.assertRegex("foo  ", pattern)
