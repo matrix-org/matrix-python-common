@@ -17,7 +17,7 @@ from matrix_common.regex import glob_to_regex
 
 
 class GlobToRegexTestCase(TestCase):
-    def test_literal_match(self):
+    def test_literal_match(self) -> None:
         """patterns without wildcards should match"""
         pat = glob_to_regex("foobaz")
         self.assertTrue(
@@ -27,7 +27,7 @@ class GlobToRegexTestCase(TestCase):
             pat.match("x foobaz"), "pattern should not match at word boundaries"
         )
 
-    def test_wildcard_match(self):
+    def test_wildcard_match(self) -> None:
         pat = glob_to_regex("f?o*baz")
 
         self.assertTrue(
@@ -39,7 +39,7 @@ class GlobToRegexTestCase(TestCase):
         self.assertFalse(pat.match("fobbaz"), "? should not match 0 characters")
         self.assertFalse(pat.match("fiiobaz"), "? should not match 2 characters")
 
-    def test_multi_wildcard(self):
+    def test_multi_wildcard(self) -> None:
         """patterns with multiple wildcards in a row should match"""
         pat = glob_to_regex("**baz")
         self.assertTrue(pat.match("agsgsbaz"), "** should match any string")
