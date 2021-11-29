@@ -23,14 +23,15 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
 
     Args:
         glob: pattern to match
-        word_boundary: If True, the pattern will be allowed to match at word boundaries
-           anywhere in the string. Otherwise, the pattern is anchored at the start and
-           end of the string.
+        word_boundary: If `True`, the pattern will be allowed to match at word
+            boundaries anywhere in the string. Otherwise, the pattern is
+            anchored at the start and end of the string. When using this option,
+            the pattern may match up to one extra non-word character on either
+            side. The matching substring may be obtained from a capture group.
 
     Returns:
         compiled regex pattern
     """
-
     # Patterns with wildcards must be simplified to avoid performance cliffs
     # - The glob `?**?**?` is equivalent to the glob `???*`
     # - The glob `???*` is equivalent to the regex `.{3,}`
@@ -42,21 +43,23 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
             continue
 
         # Wildcards? Simplify.
-        qmarks = chunk.count("?")
+        question_marks = chunk.count("?")
         if "*" in chunk:
-            chunks.append(".{%d,}" % qmarks)
+            chunks.append(".{%d,}" % (question_marks,))
         else:
-            chunks.append(".{%d}" % qmarks)
+            chunks.append(".{%d}" % (question_marks,))
 
-    res = "".join(chunks)
+    pattern = "".join(chunks)
 
     if word_boundary:
-        res = to_word_pattern(res)
+        pattern = to_word_pattern(pattern)
     else:
-        # \A anchors at start of string, \Z at end of string
-        res = r"\A" + res + r"\Z"
+        # `\A` anchors at start of string, `\Z` at end of string
+        # `\Z` is not the same as `$`! The latter will match the position before
+        # a `\n` at the end of the string.
+        pattern = rf"\A({pattern})\Z"
 
-    return re.compile(res, re.IGNORECASE)
+    return re.compile(pattern, re.IGNORECASE)
 
 
 def to_word_pattern(pattern: str) -> str:
