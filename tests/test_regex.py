@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
 from unittest import TestCase
 
 from matrix_common.regex import glob_to_regex
@@ -59,3 +60,11 @@ class GlobToRegexTestCase(TestCase):
         self.assertNotRegex("a..baz", pattern, "?*?*? should not match 2 chars")
         self.assertRegex("a.gg.baz", pattern, "?*?*? should match 4 chars")
         self.assertEqual(pattern.pattern, r"\A(a.{3,}baz)\Z")
+
+    def test_ignore_case(self) -> None:
+        """Tests case sensitivity."""
+        pattern = glob_to_regex("foobaz", ignore_case=False)
+        self.assertEqual(pattern.flags & re.IGNORECASE, 0)
+
+        pattern = glob_to_regex("foobaz", ignore_case=True)
+        self.assertEqual(pattern.flags & re.IGNORECASE, re.IGNORECASE)
