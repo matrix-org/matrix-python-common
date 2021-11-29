@@ -51,7 +51,7 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
     res = "".join(chunks)
 
     if word_boundary:
-        res = re_word_boundary(res)
+        res = to_word_pattern(res)
     else:
         # \A anchors at start of string, \Z at end of string
         res = r"\A" + res + r"\Z"
@@ -59,13 +59,27 @@ def glob_to_regex(glob: str, word_boundary: bool = False) -> Pattern[str]:
     return re.compile(res, re.IGNORECASE)
 
 
-def re_word_boundary(r: str) -> str:
+def to_word_pattern(pattern: str) -> str:
+    """Converts the given pattern to one that only matches on whole words.
+
+    Adds word boundary characters to the start and end of a pattern to require that the
+    match occur as a whole word.
+
+    If the start or end of the pattern is a non-word character, then a word boundary is
+    not required to precede or succeed it.
+
+    A word boundary is considered to be the boundary between a word and non-word
+    character. As such, the returned pattern is not appropriate for internationalized
+    text search because there are languages which do not use spaces between words.
+
+    Args:
+        pattern: The pattern to wrap.
+
+    Returns:
+        A new pattern that only matches on whole words. The new pattern may match up to
+        one extra non-word character on either side. The exact match is provided by a
+        capture group.
     """
-    Adds word boundary characters to the start and end of an
-    expression to require that the match occur as a whole word,
-    but do so respecting the fact that strings starting or ending
-    with non-word characters will change word boundaries.
-    """
-    # we can't use \b as it chokes on unicode. however \W seems to be okay
-    # as shorthand for [^0-9A-Za-z_].
-    return r"(^|\W)%s(\W|$)" % (r,)
+    # `^|\W` and `\W|$` handle the case where `pattern` starts or ends with a non-word
+    # character.
+    return rf"(?:^|\W|\b)({pattern})(?:\b|\W|$)"
