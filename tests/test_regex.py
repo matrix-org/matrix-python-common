@@ -78,12 +78,25 @@ class WordPatternTestCase(TestCase):
         self.assertRegex("foo bar", pattern)
         self.assertRegex(" foo bar ", pattern)
         self.assertRegex("baz foo bar baz", pattern)
-        self.assertNotRegex("foo baré", pattern)
+        self.assertNotRegex("foo baré", pattern, "é should be seen as part of a word")
+        self.assertNotRegex("bar foo", pattern, "Pattern should match words in order")
 
     def test_ends_with_non_letter(self) -> None:
         """Tests matching on whole words when the pattern ends with a space."""
         pattern = to_word_pattern("foo ")
 
-        self.assertRegex("foo bar", pattern)
-        self.assertRegex("foo ", pattern)
-        self.assertRegex("foo  ", pattern)
+        self.assertRegex(
+            "foo bar",
+            pattern,
+            "Pattern should be able to end its match on a word boundary",
+        )
+        self.assertRegex(
+            "foo ",
+            pattern,
+            "Pattern should be able to end its match at the end of a string",
+        )
+        self.assertRegex(
+            "foo  ",
+            pattern,
+            "Pattern should be able to end its match anywhere",
+        )
