@@ -6,13 +6,15 @@ Common utilities for Synapse, Sydent and Sygnal.
 ## Installation
 
 ```shell
-pip install matrix-python-common
+pip install matrix-common
 ```
+
 
 ## Usage
 ```py
 import matrix_common
 ```
+
 
 ## Development
 
@@ -72,4 +74,8 @@ Synapse developers (assuming a Unix-like shell):
     Create a *release*, based on the tag you just pushed, on GitHub or GitLab.
 
  8. If applicable:
-    Create a source distribution and upload it to PyPI.
+    Create a source distribution and upload it to PyPI:
+    ```shell
+    python -m build
+    twine upload dist/matrix_common-$version*
+    ```
