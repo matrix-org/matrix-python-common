@@ -1,0 +1,2 @@
+# Include tests in the source distribution
+recursive-include tests *.py
