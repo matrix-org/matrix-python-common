@@ -20,7 +20,7 @@ from typing import Dict
 try:
     from importlib.metadata import distribution
 except ImportError:
-    from importlib_metadata import distribution  # type: ignore[misc]
+    from importlib_metadata import distribution  # type: ignore
 
 __all__ = ["get_distribution_version_string"]
 
