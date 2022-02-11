@@ -18,9 +18,9 @@ import subprocess
 from typing import Dict
 
 try:
-    from importlib.metadata import Distribution
+    from importlib.metadata import distribution
 except ImportError:
-    from importlib_metadata import Distribution  # type: ignore[misc]
+    from importlib_metadata import distribution  # type: ignore[misc]
 
 __all__ = ["get_distribution_version_string"]
 
@@ -55,9 +55,9 @@ def get_distribution_version_string(distribution_name: str) -> str:
         The module version, possibly with git version information included.
     """
 
-    distribution = Distribution.from_name(distribution_name)
-    version_string = distribution.version
-    cwd = distribution.locate_file(".")
+    dist = distribution(distribution_name)
+    version_string = dist.version
+    cwd = dist.locate_file(".")
 
     try:
 
