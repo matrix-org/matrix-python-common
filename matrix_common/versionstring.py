@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 version_cache: Dict[str, str] = {}
 
 
-@functools.lru_cache
+@functools.lru_cache()
 def get_distribution_version_string(distribution_name: str) -> str:
     """Calculate a git-aware version string for a distribution package.
 
