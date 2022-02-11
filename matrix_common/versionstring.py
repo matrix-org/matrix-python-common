@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import functools
 import logging
 import subprocess
 from typing import Dict
@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 version_cache: Dict[str, str] = {}
 
 
+@functools.lru_cache
 def get_distribution_version_string(distribution_name: str) -> str:
     """Calculate a git-aware version string for a distribution package.
 
@@ -53,11 +54,6 @@ def get_distribution_version_string(distribution_name: str) -> str:
     Returns:
         The module version, possibly with git version information included.
     """
-
-    # TODO: let's just replace this with @functools.lrucache.
-    cached_version = version_cache.get(distribution_name)
-    if cached_version is not None:
-        return cached_version
 
     distribution = Distribution.from_name(distribution_name)
     version_string = distribution.version
@@ -96,7 +92,5 @@ def get_distribution_version_string(distribution_name: str) -> str:
             version_string = f"{version_string} ({git_version})"
     except Exception as e:
         logger.info("Failed to check for git repository: %s", e)
-
-    version_cache[distribution_name] = version_string
 
     return version_string
