@@ -1,5 +1,5 @@
 # Copyright 2016 OpenMarket Ltd
-# Copyright 2021 The Matrix.org Foundation C.I.C.
+# Copyright 2021-2022 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,39 +14,56 @@
 # limitations under the License.
 
 import logging
-import os
 import subprocess
-from types import ModuleType
 from typing import Dict
+
+try:
+    from importlib.metadata import Distribution
+except ImportError:
+    from importlib_metadata import Distribution  # type: ignore[misc]
+
+__all__ = ["get_distribution_version_string"]
 
 logger = logging.getLogger(__name__)
 
-version_cache: Dict[ModuleType, str] = {}
+version_cache: Dict[str, str] = {}
 
 
-def get_version_string(module: ModuleType) -> str:
-    """Given a module calculate a git-aware version string for it.
+def get_distribution_version_string(distribution_name: str) -> str:
+    """Calculate a git-aware version string for a distribution package.
 
-    If called on a module not in a git checkout will return `__version__`.
+    A "distribution package" is a thing that you can e.g. install and manage with pip.
+    It can contain modules, an "import package" of multiple modules, and arbitrary
+    resource data. See the glossary at
+
+        https://packaging.python.org/en/latest/glossary/#term-Distribution-Package
+
+    for all your taxonomic needs. Often a distribution package contains exactly import
+    package---possibly with _different_ names. For example, one can install the
+    "matrix-sydent" distribution package from PyPI using pip, and doing so makes the
+    "sydent" import package available to import.
 
     Args:
-        module: The module to check the version of. Must declare a __version__
-            attribute.
+        distribution_name: The name of the distribution package to check the version of
+
+    Raises:
+        importlib.metadata.PackageNotFoundError if the given distribution name doesn't
+        exist.
 
     Returns:
-        The module version (as a string).
+        The module version, possibly with git version information included.
     """
 
-    cached_version = version_cache.get(module)
+    # TODO: let's just replace this with @functools.lrucache.
+    cached_version = version_cache.get(distribution_name)
     if cached_version is not None:
         return cached_version
 
-    # We want this to fail loudly with an AttributeError. Type-ignore this so
-    # mypy only considers the happy path.
-    version_string = module.__version__  # type: ignore[attr-defined]
+    distribution = Distribution.from_name(distribution_name)
+    version_string = distribution.version
+    cwd = distribution.locate_file(".")
 
     try:
-        cwd = os.path.dirname(os.path.abspath(module.__file__))
 
         def _run_git_command(prefix: str, *params: str) -> str:
             try:
@@ -80,6 +97,6 @@ def get_version_string(module: ModuleType) -> str:
     except Exception as e:
         logger.info("Failed to check for git repository: %s", e)
 
-    version_cache[module] = version_string
+    version_cache[distribution_name] = version_string
 
     return version_string
