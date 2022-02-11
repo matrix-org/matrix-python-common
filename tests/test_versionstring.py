@@ -23,5 +23,5 @@ class TestVersionString(TestCase):
         Check that it's a nonempty string.
         """
         version = get_distribution_version_string("matrix-common")
-        self.assertIs(type(version), str)
+        self.assertIsInstance(version, str)
         self.assertTrue(version)
