@@ -15,7 +15,6 @@
 import functools
 import logging
 import subprocess
-from typing import Dict
 
 try:
     from importlib.metadata import distribution
@@ -25,8 +24,6 @@ except ImportError:
 __all__ = ["get_distribution_version_string"]
 
 logger = logging.getLogger(__name__)
-
-version_cache: Dict[str, str] = {}
 
 
 @functools.lru_cache()
