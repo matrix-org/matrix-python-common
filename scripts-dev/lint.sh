@@ -8,7 +8,7 @@
 set -e
 
 files=(
-  "matrix_common"
+  "src"
   "tests"
 )
 
