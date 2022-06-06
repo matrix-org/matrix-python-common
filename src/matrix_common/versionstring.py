@@ -15,6 +15,7 @@
 import functools
 import logging
 import subprocess
+from typing import Optional
 
 try:
     from importlib.metadata import distribution
@@ -27,7 +28,9 @@ logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache()
-def get_distribution_version_string(distribution_name: str) -> str:
+def get_distribution_version_string(
+    distribution_name: str, cwd: Optional[str] = None
+) -> str:
     """Calculate a git-aware version string for a distribution package.
 
     A "distribution package" is a thing that you can e.g. install and manage with pip.
@@ -44,6 +47,11 @@ def get_distribution_version_string(distribution_name: str) -> str:
     Args:
         distribution_name: The name of the distribution package to check the version of
 
+        cwd: if provided, the directory to run all git commands in. `cwd` may also be
+            the path to a file, in which case `os.path.dirname(cwd)` is used instead.
+            If omitted, the function will attempt to locate the distribution's source
+            on disk and use that location instead---but this fallback is not reliable.
+
     Raises:
         importlib.metadata.PackageNotFoundError if the given distribution name doesn't
         exist.
@@ -54,8 +62,11 @@ def get_distribution_version_string(distribution_name: str) -> str:
 
     dist = distribution(distribution_name)
     version_string = dist.version
-    cwd = dist.locate_file(".")
-
+    if cwd is None:
+        # This used to work for Synapse, but seems to have broken between versions 1.56
+        # and 1.57. I suspect that the cause is a difference in the metadata generated
+        # by `setuptools` and `poetry-core` at package-install time.
+        cwd = dist.locate_file(".").__fspath__()
     try:
 
         def _run_git_command(prefix: str, *params: str) -> str:
