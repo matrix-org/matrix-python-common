@@ -14,6 +14,7 @@
 # limitations under the License.
 import functools
 import logging
+import os.path
 import subprocess
 from typing import Optional
 
@@ -67,6 +68,7 @@ def get_distribution_version_string(
         # and 1.57. I suspect that the cause is a difference in the metadata generated
         # by `setuptools` and `poetry-core` at package-install time.
         cwd = dist.locate_file(".").__fspath__()
+    cwd = os.path.dirname(cwd)
     try:
 
         def _run_git_command(prefix: str, *params: str) -> str:
