@@ -17,8 +17,8 @@ from matrix_common.types.mxc_uri import MXCUri
 
 
 class MXCUriTestCase(TestCase):
-    def test_valid_mxc_uris(self) -> None:
-        """Tests that a series of valid mxc uris are parsed correctly."""
+    def test_valid_mxc_uris_to_str(self) -> None:
+        """Tests that a series of valid mxc are converted to a str correctly."""
         # Converting an MXCUri to its str representation
         mxc_0 = MXCUri(server_name="example.com", media_id="84n8493hnfsjkbcu")
         self.assertEqual(mxc_0.to_string(), "mxc://example.com/84n8493hnfsjkbcu")
@@ -33,6 +33,8 @@ class MXCUriTestCase(TestCase):
         mxc_2 = MXCUri(server_name="123.123.123.123", media_id="000000000000")
         self.assertEqual(mxc_2.to_string(), "mxc://123.123.123.123/000000000000")
 
+    def test_valid_mxc_uris_from_str(self) -> None:
+        """Tests that a series of valid mxc uris strs are parsed correctly."""
         # Converting a str to its MXCUri representation
         mxcuri_0 = MXCUri.from_str("mxc://example.com/g12789g890ajksjk")
         self.assertEqual(mxcuri_0.server_name, "example.com")
@@ -54,9 +56,9 @@ class MXCUriTestCase(TestCase):
         self.assertEqual(mxcuri_4.server_name, "domain")
         self.assertEqual(mxcuri_4.media_id, "abcdefg")
 
-    def test_invalid_mxc_uris(self) -> None:
+    def test_invalid_mxc_uris_from_str(self) -> None:
         """Tests that a series of invalid mxc uris are appropriately rejected."""
-        # Converting a str to its MXCUri representation
+        # Converting invalid MXC URI strs to MXCUri representations
         with self.assertRaises(ValueError):
             MXCUri.from_str("http://example.com/abcdef")
 
