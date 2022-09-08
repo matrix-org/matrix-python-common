@@ -56,7 +56,7 @@ class MXCUri:
             or not parsed_mxc_uri.netloc
             or not parsed_mxc_uri.path
             or not parsed_mxc_uri.path.startswith("/")
-            or len(parsed_mxc_uri.path) <= 1
+            or len(parsed_mxc_uri.path) == 1  # if the path is only '/', aka no Media ID
             # There cannot be any fragments, queries or parameters.
             or parsed_mxc_uri.fragment
             or parsed_mxc_uri.query
