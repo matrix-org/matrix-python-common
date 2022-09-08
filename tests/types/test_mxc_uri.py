@@ -21,17 +21,15 @@ class MXCUriTestCase(TestCase):
         """Tests that a series of valid mxc are converted to a str correctly."""
         # Converting an MXCUri to its str representation
         mxc_0 = MXCUri(server_name="example.com", media_id="84n8493hnfsjkbcu")
-        self.assertEqual(mxc_0.to_string(), "mxc://example.com/84n8493hnfsjkbcu")
+        self.assertEqual(str(mxc_0), "mxc://example.com/84n8493hnfsjkbcu")
 
         mxc_1 = MXCUri(
             server_name="192.168.1.17:8008", media_id="bajkad89h31ausdhoqqasd"
         )
-        self.assertEqual(
-            mxc_1.to_string(), "mxc://192.168.1.17:8008/bajkad89h31ausdhoqqasd"
-        )
+        self.assertEqual(str(mxc_1), "mxc://192.168.1.17:8008/bajkad89h31ausdhoqqasd")
 
         mxc_2 = MXCUri(server_name="123.123.123.123", media_id="000000000000")
-        self.assertEqual(mxc_2.to_string(), "mxc://123.123.123.123/000000000000")
+        self.assertEqual(str(mxc_2), "mxc://123.123.123.123/000000000000")
 
     def test_valid_mxc_uris_from_str(self) -> None:
         """Tests that a series of valid mxc uris strs are parsed correctly."""

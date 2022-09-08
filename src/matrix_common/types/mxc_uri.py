@@ -81,8 +81,8 @@ class MXCUri:
 
         return cls(server_name, media_id)
 
-    def to_string(self) -> str:
+    def _to_string(self) -> str:
         """Convert an MXCUri object to a str."""
         return f"mxc://{self.server_name}/{self.media_id}"
 
-    __str__ = to_string
+    __str__ = _to_string
