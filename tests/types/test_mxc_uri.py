@@ -88,6 +88,9 @@ class MXCUriTestCase(TestCase):
             MXCUri.from_str("mxc:///")
 
         with self.assertRaises(ValueError):
+            MXCUri.from_str("example.com/abc")
+
+        with self.assertRaises(ValueError):
             MXCUri.from_str("")
 
         with self.assertRaises(ValueError):
